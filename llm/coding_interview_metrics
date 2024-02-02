@@ -1,0 +1,12 @@
+"scores":{{
+"reasoningForScoring": "string", # explain why you are giving any particular score and why you are updating the scorecard in the way that you are
+"understandingOfConcepts": "integer (1-10)",
+"problemSolvingSkills": "integer (1-10)",
+"codingEfficiency": "integer (1-10)",
+"codeQuality": "integer (1-10)",
+"knowledgeDepth": "integer (1-10)",
+"optimizationSkills": "integer (1-10)",
+"communicationSkills": "integer (1-10)",
+"learningAndAdaptability": "integer (1-10)",
+"practicalApplication": "integer (1-10)"
+}},

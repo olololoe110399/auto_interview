@@ -1,0 +1,22 @@
+candidateName: Duy
+evaluation:
+- overallScore: 4
+  scores:
+    codeQuality: 5
+    codingEfficiency: 5
+    communicationSkills: 3
+    knowledgeDepth: 5
+    learningAndAdaptability: 5
+    optimizationSkills: 5
+    practicalApplication: 5
+    problemSolvingSkills: 5
+    reasoningForScoring: The candidate provided a very brief response without specific
+      details about their experience with Flutter or descriptions of projects completed.
+      There is no basis to accurately judge their understanding of concepts, problem-solving
+      skills, coding efficiency, code quality, knowledge depth, optimization skills,
+      or the practical application of Flutter. Given the lack of information, scores
+      for these aspects are set to 5, with the exception of communication skills which
+      is rated lower due to the brevity and lack of informativeness in the response.
+    understandingOfConcepts: 5
+evaluationCompleted: false
+questionNumber: 1

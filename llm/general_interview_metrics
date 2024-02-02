@@ -1,0 +1,14 @@
+"scores":{{
+"reasoningForScoring": "string", # explain why you are giving any particular score and why you are updating the scorecard in the way that you are
+"understandingOfRoleSpecificSkills": "integer (1-10)",
+"problemSolvingAndCriticalThinking": "integer (1-10)",
+"technicalOrFunctionalExpertise": "integer (1-10)", # this can be coding efficiency, for other, relevant functional skills, etc.
+"qualityOFWork": "integer (1-10)", # Includes code quality for technical roles, presentation quality for marketing roles, etc.
+"industryAndDomainKnowledge": "integer (1-10)", # understanding of the sepcific industry and domain of the company
+"communicationAndInterpersonalSkills": "integer (1-10)",
+"teamworkAndCollaboration": "integer (1-10)",
+"leadershipAndManagementSkills": "integer (1-10)", # More relevant for senior and managerial positions
+"adaptabilityAndLearningSkills": "integer (1-10)",
+"innovationAndCreativity": "integer (1-10)",
+"organizationalFit": "integer (1-10)", # Alignment with the company's culture and values
+}},
