@@ -85,3 +85,6 @@ Run with docker-compose:
 ```bash
 docker compose up --build -d
 ```
+
+ - GG Sheets: https://docs.google.com/spreadsheets/d/1bFwQc55UwS2axNfwHvA4D0Q0NKi1SO2JisHRdZczqgQ/edit#gid=998067017
+ - Youtube: https://www.youtube.com/watch?v=LLFkEv4dMiU
