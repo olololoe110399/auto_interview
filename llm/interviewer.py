@@ -36,8 +36,6 @@ class Interviewer(Observable):
         self.setup_interview()
         self.directory_of_this_script = os.path.dirname(os.path.realpath(__file__))
         # Connect to the database
-        self.conn = sqlite3.connect(os.path.join(self.directory_of_this_script, "interviews.db"))
-        self.cursor = self.conn.cursor()
         self.table_name = self.get_table_name()
         self.create_table()
 
@@ -46,27 +44,31 @@ class Interviewer(Observable):
         base_name = self.name_of_candidate.replace(" ", "_")
         i = 1
         # Find a table name that doesn't exist
-        while True:
-            table_name = f"{base_name}_{i}" if i > 1 else base_name
-            self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
-            # If the table doesn't exist, return the name
-            if not self.cursor.fetchall():
-                return table_name
-            i += 1
+        with sqlite3.connect(os.path.join(self.directory_of_this_script, "interviews.db")) as conn:
+            cursor = conn.cursor()
+            while True:
+                table_name = f"{base_name}_{i}" if i > 1 else base_name
+                cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{table_name}'")
+                # If the table doesn't exist, return the name
+                if not cursor.fetchall():
+                    return table_name
+                i += 1
 
     # Create the table
     def create_table(self):
-        self.cursor.execute(
-            f"""CREATE TABLE IF NOT EXISTS {self.table_name} (
-            question_number TEXT PRIMARY KEY,
-            interviewing_for TEXT NOT NULL,
-            level TEXT NOT NULL,
-            question TEXT NOT NULL,
-            answer TEXT NOT NULL,
-            evaluation TEXT
-            )"""
-        )
-        self.conn.commit()
+        with sqlite3.connect(os.path.join(self.directory_of_this_script, "interviews.db")) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                f"""CREATE TABLE IF NOT EXISTS {self.table_name} (
+                question_number TEXT NOT NULL,
+                interviewing_for TEXT NOT NULL,
+                level TEXT NOT NULL,
+                question TEXT NOT NULL,
+                answer TEXT NOT NULL,
+                evaluation TEXT
+                )"""
+            )
+            conn.commit()
 
     # Set up the interview
     def setup_interview(self):
@@ -83,22 +85,24 @@ class Interviewer(Observable):
 
     # Add the interview to the database
     def add_to_database(self, data):
-        sql = f"""
-        INSERT INTO {self.table_name} (question_number, interviewing_for, level, question, answer, evaluation)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """
-        self.cursor.execute(
-            sql,
-            (
-                data['question_number'],
-                data['interviewing_for'],
-                data['level'],
-                data['question'],
-                data['answer'],
-                data['evaluation'],
-            ),
-        )
-        self.conn.commit()
+        with sqlite3.connect(os.path.join(self.directory_of_this_script, "interviews.db")) as conn:
+            cursor = conn.cursor()
+            sql = f"""
+            INSERT INTO {self.table_name} (question_number, interviewing_for, level, question, answer, evaluation)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """
+            cursor.execute(
+                sql,
+                (
+                    data['question_number'],
+                    data['interviewing_for'],
+                    data['level'],
+                    data['question'],
+                    data['answer'],
+                    data['evaluation'],
+                ),
+            )
+            conn.commit()
 
     def conduct_interview(self):
         # Start the interview

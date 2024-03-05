@@ -1,3 +1,3 @@
 export PYTHONPATH=$(pwd)
 
-streamlit run app.py --server.port 5001
+streamlit run Hello.py --server.port 5001

@@ -1,5 +1,7 @@
 termcolor==2.4.0
-openai==1.10.0
+openai==1.11.0
 PyYAML==6.0.1
 streamlit==1.31.0
 st-gsheets-connection==0.0.4
+audio_recorder_streamlit==0.0.8
+wave==0.0.2

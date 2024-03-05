@@ -4,13 +4,20 @@ import streamlit as st
 
 from llm import GPTChatClient, Interviewer
 
+# Set the page config
+st.set_page_config(
+    page_title="Auto Interview Speaker",
+    page_icon="🧊",
+    initial_sidebar_state="expanded",
+)
+
 # Settings for the app
-with st.sidebar.expander("Settings", expanded=True):
+with st.sidebar.expander("Settings"):
     # Input for OpenAI API Key
     open_api_key = st.text_input(
         "OpenAI API Key:",
         key="open_api_key",
-        value="YOUR_API_KEY",
+        value="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",
         type="password"
     )
     # Input for language
@@ -21,17 +28,26 @@ with st.sidebar.expander("Settings", expanded=True):
         index=0,
     )
 
+    # Input for the number of questions
+    how_many_questions = st.number_input(
+        "How many questions would you like to ask?",
+        key="how_many_questions",
+        min_value=1,
+        max_value=100,
+        value=3,
+    )
+
 # Check if the OpenAI API Key is provided
-if not open_api_key:
-    st.info("Please enter your OpenAI API Key", icon="🚨")
+if not open_api_key or not language or not how_many_questions:
+    st.info("Please enter your settings", icon="🚨")
     st.stop()
+
+st.sidebar.info("Please reload the page before update the settings.", icon="🚨")
 
 # Set the OpenAI API Key
 os.environ["OPENAI_API_KEY"] = open_api_key
 
 st.header(":rocket: Interview with AI :page_facing_up:")
-
-st.sidebar.info("Please reload the page before update the settings.", icon="🚨")
 
 # Input for the interview information
 interviewing_for = st.text_input(
@@ -49,30 +65,23 @@ level = st.text_input(
     value="Middle",
 )
 
-# Input for the number of questions
-how_many_questions = st.number_input(
-    "How many questions would you like to ask?",
-    key="how_many_questions",
-    min_value=1,
-    max_value=100,
-    value=3,
-)
-
 # Input for the name of the candidate
 name_of_candidate = st.text_input(
     "What is the name of the candidate?",
     key="name_of_candidate",
     placeholder="John Doe",
-    value="Duy",
 )
-
 # Check if the interview information is provided
 if not interviewing_for or not level or not how_many_questions or not name_of_candidate:
     st.info("Please enter the following information", icon="🚨")
     st.stop()
 
 # Conduct the interview
-if st.button("Conduct interview"):
+if "interviewer" not in st.session_state:
+    interviewing_for = st.session_state.interviewing_for
+    level = st.session_state.level
+    how_many_questions = st.session_state.how_many_questions
+    name_of_candidate = st.session_state.name_of_candidate
     # Clear the previous messages and interviewer
     st.session_state.pop("messages", None)
     st.session_state.pop("interviewer", None)
@@ -112,8 +121,9 @@ for message in st.session_state.messages:
 # Chat with the AI
 if "interviewer" in st.session_state:
     interviewer = st.session_state.interviewer
+
     # Check if the interview is over
-    if st.session_state.on_question_number > how_many_questions:
+    if st.session_state.on_question_number > interviewer.how_many_questions:
         st.info("Interview is over. Please reload the page to start a new interview.", icon="🚨")
         st.stop()
 
@@ -121,13 +131,24 @@ if "interviewer" in st.session_state:
     if st.session_state.on_question_number == 0:
         with st.chat_message("assistant"):
             st.session_state.gpt_response = st.session_state.interviewer.gpt_client.get_response()
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": st.session_state.gpt_response,
+                }
+            )
             st.session_state.on_question_number = 1
-            st.session_state.messages = st.session_state.interviewer.gpt_client.history
 
     # Ask the next question
     if user_input := st.chat_input("Enter your answer here:"):
         with st.chat_message("user"):
             st.markdown(user_input)
+            st.session_state.messages.append(
+                {
+                    "role": "user",
+                    "content": user_input,
+                }
+            )
         with st.spinner("Processing..."):
             # Add the user input to the database
             interviewer.add_to_database({
@@ -158,11 +179,22 @@ if "interviewer" in st.session_state:
                     "Please say goodbye to the candidate and end the interview.",
                 )
                 st.session_state.gpt_response = interviewer.gpt_client.get_response()
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": st.session_state.gpt_response,
+                    }
+                )
         else:
             # Generate the next question
             interviewer.gpt_client.add_message("user", user_input)
             with st.chat_message("assistant"):
                 st.session_state.gpt_response = interviewer.gpt_client.get_response()
+                st.session_state.messages.append(
+                    {
+                        "role": "assistant",
+                        "content": st.session_state.gpt_response,
+                    }
+                )
 
         st.session_state.on_question_number += 1
-        st.session_state.messages = interviewer.gpt_client.history
